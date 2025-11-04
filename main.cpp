@@ -97,9 +97,6 @@ int buildEncodingTree(int nextFree) {
     }
     // 3. While the heap size is greater than 1:
 
-
-
-
     while (heap.size > 1) {
         //    - Pop two smallest nodes
         int smallest = heap.pop(weightArr);
@@ -130,15 +127,34 @@ void generateCodes(int root, string codes[]) {
 
     if (root < 0) return;
 
-    stack<pair<int, string>> st;
-    st.push({root, ""});
+    stack<int> nodeSt;
+    stack<string> pathSt;
 
-    while (!st.empty()) {
-        auto cur = st.top();
-        st.pop();
+    nodeSt.push(root);
+    pathSt.push("");
 
-        int node = cur.first;
-        string path = cur.second;
+    while (!nodeSt.empty()) {
+        int node = nodeSt.top(); nodeSt.pop();
+        string path = pathSt.top(); pathSt.pop();
+
+        bool isLeaf = (leftArr[node] == -1 && rightArr[node] == -1);
+
+        if (isLeaf) {
+            char c = charArr[node];
+            if (c >= 'a' && c <= 'z') {
+                if (path.empty()) path = "0"; // Edge Case
+                codes[c - 'a'] = path;
+            }
+        } else {
+            if (rightArr[node] != -1) {
+                nodeSt.push(rightArr[node]);
+                pathSt.push(path + '1');
+            }
+            if (leftArr[node] != -1) {
+                nodeSt.push(leftArr[node]);
+                pathSt.push(path + '0');
+            }
+        }
     }
 }
 
